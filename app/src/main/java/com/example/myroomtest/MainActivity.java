@@ -3,6 +3,8 @@ package com.example.myroomtest;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -22,50 +24,56 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final EditText editPressure = (EditText)findViewById(R.id.editPressure);
-        editPressure.setOnKeyListener(new View.OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                if(event.getAction() == KeyEvent.ACTION_DOWN ||
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
-                    // сохраняем текст, введенный до нажатия Enter в переменную
-                    Pressure = Integer.parseInt(editPressure.getText().toString());
-                    return true;
-                }
-                return false;
+        editPressure.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Pressure = Integer.parseInt(editPressure.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
         final EditText editTbattery = (EditText)findViewById(R.id.editTbattery);
-        editPressure.setOnKeyListener(new View.OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                if(event.getAction() == KeyEvent.ACTION_DOWN ||
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
-                    // сохраняем текст, введенный до нажатия Enter в переменную
-                    TempBattery = Integer.parseInt(editTbattery.getText().toString());
-                    return true;
-                }
-                return false;
+        editPressure.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                TempBattery = Integer.parseInt(editTbattery.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
         final EditText editTair = (EditText)findViewById(R.id.editTair);
-        editPressure.setOnKeyListener(new View.OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                if(event.getAction() == KeyEvent.ACTION_DOWN ||
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
-                    // сохраняем текст, введенный до нажатия Enter в переменную
-                    TempAir = Integer.parseInt(editTair.getText().toString());
-                    return true;
-                }
-                return false;
+        editPressure.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                TempAir = Integer.parseInt(editTair.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -84,5 +92,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ClimateRoomDatabase database = Room.databaseBuilder(this, ClimateRoomDatabase.class, "mydb")
+                .allowMainThreadQueries()
+                .build();
     }
 }
