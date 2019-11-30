@@ -1,12 +1,26 @@
 package com.example.myroomtest;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
+import android.content.Context;
 
-import inventory.techiediaries.com.dao.ItemDAO;
-import inventory.techiediaries.com.models.Item;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
-@Database(entities = {HomeClimate.class}, version = 1)
+
+@Database(entities = {ClimateItem.class}, version = 1, exportSchema = false)
 public abstract class ClimateRoomDatabase extends RoomDatabase {
-    public abstract ItemDAO getItemDAO();
+    private static final String DB_NAME = "climate_db";
+    public static ClimateRoomDatabase sInstanse;
+
+    public static synchronized  ClimateRoomDatabase getInstance(Context context) {
+        if (sInstanse == null) {
+            sInstanse = Room.databaseBuilder(context.getApplicationContext(),
+                    ClimateRoomDatabase.class, DB_NAME)
+            .fallbackToDestructiveMigration()
+                    .build();
+        }
+        return sInstanse;
+    }
+
+    public abstract ClimateDao climateDao();
 }

@@ -1,6 +1,8 @@
 package com.example.myroomtest;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.List;
+
+import static androidx.room.Room.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final ClimateRoomDatabase appDb = ClimateRoomDatabase.getInstance(this);
 
         final EditText editPressure = (EditText)findViewById(R.id.editPressure);
         editPressure.addTextChangedListener(new TextWatcher() {
@@ -81,19 +89,22 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currTime = System.currentTimeMillis();
-                TextView tv = (TextView)findViewById(R.id.textViewDB);
-                String st = String.valueOf(currTime) + " | " +
-                        String.valueOf(Pressure) + " | " +
-                        String.valueOf(TempBattery) + " | " +
-                        String.valueOf(TempAir);
-                tv.setText(st);
+            ClimateItem item =
+                new ClimateItem(System.currentTimeMillis(), Pressure, TempBattery, TempAir);
+            appDb.climateDao().insert(item);
+
+            List<ClimateItem> items = appDb.climateDao().getAll();
+
+            StringBuilder builder = new StringBuilder();
+            for (ClimateItem details : items) {
+                    builder.append(details + "\n");
+            }
+            TextView tv = (TextView)findViewById(R.id.textViewDB);
+
+            tv.setText(builder.toString());
 
             }
         });
 
-        ClimateRoomDatabase database = Room.databaseBuilder(this, ClimateRoomDatabase.class, "mydb")
-                .allowMainThreadQueries()
-                .build();
     }
 }

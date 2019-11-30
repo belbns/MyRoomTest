@@ -6,19 +6,25 @@ import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
 @Entity(tableName = "climate_table")
-public class HomeClimate {
+public class ClimateItem {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "measure_time")
-    private long measureTime;
+    public long measureTime;
 
     @ColumnInfo(name = "pressure")
-    private int Pressure;
+    public int Pressure;
 
     @ColumnInfo(name = "temp_battery")
-    private int tempBattery;
+    public int tempBattery;
 
     @ColumnInfo(name = "temp_air")
-    private int tempAir;
+    public int tempAir;
 
+    public ClimateItem(long measureTime, int Pressure, int tempBattery, int tempAir) {
+        this.measureTime = measureTime;
+        this.Pressure = Pressure;
+        this.tempBattery = tempBattery;
+        this.tempAir = tempAir;
+    }
 }
