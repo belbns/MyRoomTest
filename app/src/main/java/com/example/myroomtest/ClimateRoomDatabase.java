@@ -7,19 +7,20 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 
-@Database(entities = {ClimateItem.class}, version = 1, exportSchema = false)
+@Database(entities = ClimateItem.class, version = 1, exportSchema = false)
 public abstract class ClimateRoomDatabase extends RoomDatabase {
     private static final String DB_NAME = "climate_db";
-    public static ClimateRoomDatabase sInstanse;
+    private static ClimateRoomDatabase sInstance;
 
     public static synchronized  ClimateRoomDatabase getInstance(Context context) {
-        if (sInstanse == null) {
-            sInstanse = Room.databaseBuilder(context.getApplicationContext(),
+        if (sInstance == null) {
+            sInstance = Room.databaseBuilder(context.getApplicationContext(),
                     ClimateRoomDatabase.class, DB_NAME)
+            .allowMainThreadQueries()   // allow query from main thread
             .fallbackToDestructiveMigration()
                     .build();
         }
-        return sInstanse;
+        return sInstance;
     }
 
     public abstract ClimateDao climateDao();

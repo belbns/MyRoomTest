@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ClimateRoomDatabase appDb = ClimateRoomDatabase.getInstance(this);
-
         final EditText editPressure = (EditText)findViewById(R.id.editPressure);
         editPressure.addTextChangedListener(new TextWatcher() {
             @Override
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final EditText editTbattery = (EditText)findViewById(R.id.editTbattery);
-        editPressure.addTextChangedListener(new TextWatcher() {
+        editTbattery.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final EditText editTair = (EditText)findViewById(R.id.editTair);
-        editPressure.addTextChangedListener(new TextWatcher() {
+        editTair.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -89,17 +87,22 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ClimateRoomDatabase appDb = ClimateRoomDatabase.getInstance(getApplicationContext());
             ClimateItem item =
-                new ClimateItem(System.currentTimeMillis(), Pressure, TempBattery, TempAir);
+                new ClimateItem();
+            item.measureTime = System.currentTimeMillis();
+            item.Pressure = Pressure;
+            item.tempBattery = TempBattery;
+            item.tempAir = TempAir;
             appDb.climateDao().insert(item);
 
             List<ClimateItem> items = appDb.climateDao().getAll();
 
             StringBuilder builder = new StringBuilder();
             for (ClimateItem details : items) {
-                    builder.append(details + "\n");
+                    builder.append(details.measureTime).append(", ").append(details.tempAir).append(", ").append(details.tempBattery).append(", ").append(details.Pressure).append("\n");
             }
-            TextView tv = (TextView)findViewById(R.id.textViewDB);
+            TextView tv = findViewById(R.id.textViewDB);
 
             tv.setText(builder.toString());
 

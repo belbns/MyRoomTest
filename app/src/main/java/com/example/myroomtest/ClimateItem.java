@@ -20,11 +20,13 @@ public class ClimateItem {
 
     @ColumnInfo(name = "temp_air")
     public int tempAir;
-
+/*
     public ClimateItem(long measureTime, int Pressure, int tempBattery, int tempAir) {
         this.measureTime = measureTime;
         this.Pressure = Pressure;
         this.tempBattery = tempBattery;
         this.tempAir = tempAir;
     }
+
+ */
 }
