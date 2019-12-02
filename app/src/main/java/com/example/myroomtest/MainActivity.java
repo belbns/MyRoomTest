@@ -4,6 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+	    scheduleAlarm();
+
+
         final EditText editPressure = (EditText)findViewById(R.id.editPressure);
         editPressure.addTextChangedListener(new TextWatcher() {
             @Override
@@ -38,7 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Pressure = Integer.parseInt(editPressure.getText().toString());
+                //Pressure = Integer.parseInt(editPressure.getText().toString());
+                try {
+                    Pressure = Integer.parseInt(editPressure.getText().toString());
+                } catch (NumberFormatException nfe) {
+                    editPressure.setText(Integer.toString(Pressure));
+                }
+
             }
 
             @Override
@@ -56,7 +72,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                TempBattery = Integer.parseInt(editTbattery.getText().toString());
+                //TempBattery = Integer.parseInt(editTbattery.getText().toString());
+                try {
+                    TempBattery = Integer.parseInt(editTbattery.getText().toString());
+                } catch (NumberFormatException nfe) {
+                    editTbattery.setText(Integer.toString(TempBattery));
+                }
             }
 
             @Override
@@ -74,7 +95,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                TempAir = Integer.parseInt(editTair.getText().toString());
+                //TempAir = Integer.parseInt(editTair.getText().toString());
+                try {
+                    TempAir = Integer.parseInt(editTair.getText().toString());
+                } catch (NumberFormatException nfe) {
+                    editTair.setText(Integer.toString(TempAir));
+                }
+
             }
 
             @Override
@@ -88,26 +115,53 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ClimateRoomDatabase appDb = ClimateRoomDatabase.getInstance(getApplicationContext());
-            ClimateItem item =
-                new ClimateItem();
+        /*
+            ClimateItem item = new ClimateItem();
             item.measureTime = System.currentTimeMillis();
             item.Pressure = Pressure;
             item.tempBattery = TempBattery;
             item.tempAir = TempAir;
             appDb.climateDao().insert(item);
+        */
+                List<ClimateItem> items = appDb.climateDao().getAll();
 
-            List<ClimateItem> items = appDb.climateDao().getAll();
-
-            StringBuilder builder = new StringBuilder();
-            for (ClimateItem details : items) {
+                StringBuilder builder = new StringBuilder();
+                for (ClimateItem details : items) {
                     builder.append(details.measureTime).append(", ").append(details.tempAir).append(", ").append(details.tempBattery).append(", ").append(details.Pressure).append("\n");
-            }
-            TextView tv = findViewById(R.id.textViewDB);
+                }
+                TextView tv = findViewById(R.id.textViewDB);
 
-            tv.setText(builder.toString());
+                tv.setText(builder.toString());
 
+                cancelAlarm();
             }
         });
 
     }
+
+// Setup a recurring alarm every half hour
+    public void scheduleAlarm() {
+	    // Construct an intent that will execute the AlarmReceiver
+	    Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
+	    // Create a PendingIntent to be triggered when the alarm goes off
+	    final PendingIntent pIntent = PendingIntent.getBroadcast(this,
+                MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    // Setup periodic alarm every every half hour from this point onwards
+	    long firstMillis = System.currentTimeMillis(); // alarm is set right away
+	    AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+	    // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+	    // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+	    alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+    	    60000, pIntent);
+            //AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+    }
+
+    public void cancelAlarm() {
+	    Intent intent = new Intent(getApplicationContext(), MyAlarmReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this,
+                MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+	    alarm.cancel(pIntent);
+    }
+
 }
